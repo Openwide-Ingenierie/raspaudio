@@ -1,0 +1,9 @@
+
+config BR2_RASPAUDIO_PAACCESS
+	string "pulseaudio access list"
+	default ""
+	help
+	   A semicolon separated list of IP address range to which anonymous access is
+	   allowed. Example: 10.11.12.13;192.168.50.0/24;127.0.0.0/8
+	   
+	   if left empty, no authentification will be required.
