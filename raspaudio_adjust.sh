@@ -10,17 +10,17 @@ BR2_RASPAUDIO_PAACCESS="$( sed -r -e '/^BR2_RASPAUDIO_PAACCESS="(.*)"$/!d;'    \
                          -e 's//\1/;'                                           \
                          "${BUILDROOT_CONFIG}"                                  \
                 )"
+#remove previously added section
+sed -i '/^\#\#\# Added/,$d' $TARGET_DIR/etc/pulse/system.pa
 
-
+#re-add our customisationd
 cat >> $TARGET_DIR/etc/pulse/system.pa <<END_PA
-
-
 ### Added for local use
 load-module module-zeroconf-publish
 END_PA
 
 if [ -z $BR2_RASPAUDIO_PAACCESS ] ; then
-	echo "load-module module-native-protocol-tcp auth-anonymous" >> $TARGET_DIR/etc/pulse/system.pa
+	echo "load-module module-native-protocol-tcp auth-anonymous=1" >> $TARGET_DIR/etc/pulse/system.pa
 else
 	echo "load-module module-native-protocol-tcp auth-ip-acl=$BR2_RASPAUDIO_PAACCESS" >> $TARGET_DIR/etc/pulse/system.pa
 fi
