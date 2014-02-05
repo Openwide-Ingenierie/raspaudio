@@ -3,21 +3,48 @@
 lastword = $(word $(words $(1)),$(1))
 makedir := $(dir $(call lastword,$(MAKEFILE_LIST)))
 
-MAKEARGS := -C $(CURDIR)/buildroot
+#location of the buildroot sources
+MAKEARGS := -C $(CURDIR)/buildroot 
+#location to store build files
 MAKEARGS += O=$(CURDIR)/output
+# location to store extra config options and buildroot packages
 MAKEARGS += BR2_EXTERNAL=$(CURDIR)
-MAKEARGS += BR2_DEFCONFIG=$(CURDIR)/raspaudio_defconfig
+# location of default defconfig
+DEFCONFIG := BR2_DEFCONFIG=$(CURDIR)/raspaudio_defconfig
+ALT_DEFCONFIG := BR2_DEFCONFIG=$(CURDIR)/defconfig
 
 MAKEFLAGS += --no-print-directory
 
-.PHONY: all $(MAKECMDGOALS)
+config_change_targets := menuconfig nconfig xconfig gconfig oldconfig \
+       	silentoldconfig randconfig allyesconfig allnoconfig randpackageconfig \
+       	allyespackageconfig allnopackageconfig %_defconfig
 
-all	:= $(filter-out Makefile,$(MAKECMDGOALS))
+special_target = $(config_change_targets) Makefile defconfig savedefconfig
+
+all	:= $(filter-out $(special_target),$(MAKECMDGOALS))
+
+default:  
+	$(MAKE) $(MAKEARGS) $(DEFCONFIG) defconfig
+	$(MAKE) $(MAKEARGS) $(DEFCONFIG)
+
+
+.PHONY: $(special_target) $(MAKECMDGOALS)
 
 _all:
-	$(MAKE) $(MAKEARGS) $(all)
+	$(MAKE) $(MAKEARGS) $(DEFCONFIG) $(all)
+
+defconfig raspberrypi_defconfig:
+	$(MAKE) $(MAKEARGS) $(ALT_DEFCONFIG) $@
+	$(MAKE) $(MAKEARGS) $(DEFCONFIG) savedefconfig
+
+savedefconfig:
+	$(MAKE) $(MAKEARGS) $(DEFCONFIG) defconfig
+	$(MAKE) $(MAKEARGS) $(ALT_DEFCONFIG) savedefconfig
 
 Makefile:;
+
+$(config_change_targets):
+	$(MAKE) $(MAKEARGS) $(DEFCONFIG) defconfig $@ savedefconfig
 
 $(all): _all
 	@:
