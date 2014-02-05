@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Raspaudio : A buildroot rootfs for the raspberry pi that will play a simple pulseaudio stream" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Raspaudio</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/Openwide-Ingenierie/raspaudio">View on GitHub</a>
+
+          <h1 id="project_title">Raspaudio</h1>
+          <h2 id="project_tagline">A buildroot rootfs for the raspberry pi that will play a simple pulseaudio stream</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Openwide-Ingenierie/raspaudio/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Openwide-Ingenierie/raspaudio/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="raspaudio" class="anchor" href="#raspaudio"><span class="octicon octicon-link"></span></a>raspaudio</h1>
+
+<p>Small project to use buildroot and Raspberry pi to send audio from a pulseaudio source to a HiFi system</p>
+
+<h2>
+<a name="compiling" class="anchor" href="#compiling"><span class="octicon octicon-link"></span></a>Compiling</h2>
+
+<pre><code>$ git clone &lt;repository&gt;
+$ cd raspaudio
+$ git submodule init
+$ git submodule update
+$ make
+</code></pre>
+
+<p>At this point, you should have images ready to install on your raspberrypi in the output/images/ subdirectory</p>
+
+<p>details on how to install on the raspberry-pi are available in the file buildroot/board/raspberrypi/readme</p>
+
+<h2>
+<a name="enabling-streaming-on-the-pc" class="anchor" href="#enabling-streaming-on-the-pc"><span class="octicon octicon-link"></span></a>Enabling streaming on the PC</h2>
+
+<p>Once your raspberrypi is pluged on the back of your HiFi you need to have your PC stream to it.</p>
+
+<p>Use the paprefs program from pulseaudio to enable detection of network sound devices</p>
+
+<p>Use pavucontrol to use the newly detected devices.</p>
+
+<p>Sound should be streamed from your PC to your raspberrypi</p>
+
+<p>Note that there might be some time delay between the two. We have observed that these delays tend to disapear over time.</p>
+
+<h2>
+<a name="adapting-raspaudio-to-your-need" class="anchor" href="#adapting-raspaudio-to-your-need"><span class="octicon octicon-link"></span></a>Adapting raspaudio to your need</h2>
+
+<p>Raspaudio is based on the the <a href="http://buildroot.org">buildroot</a> project. You can simply type</p>
+
+<pre><code>make menuconfig
+</code></pre>
+
+<p>In the repository to adapt raspaudio to you own needs. There is only one raspaudio specific configuration option
+in the <em>User-Defined</em> section. It allows you to set a whitelist of IP adresses that are allowed to stream to the
+device. If that option is not set anybody can stream to the device</p>
+
+<h2>
+<a name="technical-details" class="anchor" href="#technical-details"><span class="octicon octicon-link"></span></a>Technical details</h2>
+
+<p>The aim of this project is both to have an easy way to stream audio from the PC to the living-room and 
+to have a clean buildroot project. This section will provide more details on this configuration</p>
+
+<h2>
+<a name="package-details" class="anchor" href="#package-details"><span class="octicon octicon-link"></span></a>Package details</h2>
+
+<p>raspaudio is based on buildroot's raspberrypi_defconfig with the following differences</p>
+
+<ul>
+<li>enable ALSA : needed for audio</li>
+<li>enable Pulseaudio : receive pulseaudio streams</li>
+<li>enable Avahi : advertise service on the network</li>
+<li>enable ntpdate : update clock on startup</li>
+<li>enable openssh : to have a ssh server on the target</li>
+<li>modify busybox : enable dhcp retry if server doesn't respond</li>
+<li>overlay network configuration : enable eth0, use dhcp for configuration</li>
+<li>post build script : add the public key of the build machine to the authorized keys of root for convienience</li>
+<li>post build script : generate the whitelist in pulseaudio's configuration files</li>
+</ul><h2>
+<a name="buildroot-configuration" class="anchor" href="#buildroot-configuration"><span class="octicon octicon-link"></span></a>Buildroot configuration</h2>
+
+<p>The buildroot installation has been customized to allow all configuration files to be moved out of the buildroot subdirectory </p>
+
+<ul>
+<li>changed dl dir to dl/ (out of the buildroot subdirectory)</li>
+<li>changed busybox default config file to busybox-config</li>
+<li>added a makefile in the project's root directory to be able to build from there</li>
+<li>set buildroot's output directory to output/ (out of the buildroot subdirectory)</li>
+<li>set buildroot's BR2_EXTERNAL to the root of the project (out of the buildroot subdirectory)</li>
+<li>added a raspaudio specific configuration option in Config.mk</li>
+<li>The makefile will backup any change to the .config file to raspaudio_defconfig immediately</li>
+</ul><h2>
+<a name="todo-list" class="anchor" href="#todo-list"><span class="octicon octicon-link"></span></a>TODO List</h2>
+
+<ul>
+<li>Since the whole image is readonly, use a single partition and an initrd</li>
+<li>Alternatively use buildroot's genimage infrastructure if/when it's integrated</li>
+<li>Proper handling of linux-menuconfig and the other kconfig based tools</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Raspaudio maintained by <a href="https://github.com/Openwide-Ingenierie">Openwide-Ingenierie</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
