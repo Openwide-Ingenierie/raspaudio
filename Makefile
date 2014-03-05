@@ -50,7 +50,6 @@ savedefconfig:
 
 # update from current configuration, run the command, then save the result
 $(config_change_targets): $(DEFCONFIG_FILE)
-	echo $@ 3
 	$(MAKE) $(MAKEARGS) $(DEFCONFIG) defconfig $@ savedefconfig
 
 _all:
