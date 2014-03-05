@@ -45,16 +45,12 @@ savedefconfig:
 # generate from a defconfig then save as current configuration
 %_defconfig:
 	$(MAKE) $(MAKEARGS) $(DEFCONFIG) $@ savedefconfig
-	echo 'BR2_DL_DIR="$$(BR2_EXTERNAL)/dl"' >> $(DEFCONFIG_FILE)
-	echo 'BR2_ROOTFS_OVERLAY="$$(BR2_EXTERNAL)/overlay"' >> $(DEFCONFIG_FILE)
-	echo 'BR2_PACKAGE_OVERRIDE_FILE="$$(BR2_EXTERNAL)/local.mk"' >> $(DEFCONFIG_FILE)
-	echo 'BR2_GLOBAL_PATCH_DIR="$$(BR2_EXTERNAL)/patch"' >> $(DEFCONFIG_FILE)
-	$(MAKE) $(MAKEARGS) $(DEFCONFIG) defconfig savedefconfig
+	$(call UPDATE_DEFCONFIG)
 
 
 # update from current configuration, run the command, then save the result
-$(config_change_targets):
-	touch $(CURDIR)/$(PROJECT_NAME)_defconfig
+$(config_change_targets): $(DEFCONFIG_FILE)
+	echo $@ 3
 	$(MAKE) $(MAKEARGS) $(DEFCONFIG) defconfig $@ savedefconfig
 
 _all:
@@ -67,4 +63,16 @@ $(all): _all
 	@:
 
 Makefile:;
+
+$(DEFCONFIG_FILE):
+	$(call UPDATE_DEFCONFIG)
+
+define UPDATE_DEFCONFIG
+	echo 'BR2_DL_DIR="$$(BR2_EXTERNAL)/dl"' >> $(DEFCONFIG_FILE)
+	echo 'BR2_ROOTFS_OVERLAY="$$(BR2_EXTERNAL)/overlay"' >> $(DEFCONFIG_FILE)
+	echo 'BR2_PACKAGE_OVERRIDE_FILE="$$(BR2_EXTERNAL)/local.mk"' >> $(DEFCONFIG_FILE)
+	echo 'BR2_GLOBAL_PATCH_DIR="$$(BR2_EXTERNAL)/patch"' >> $(DEFCONFIG_FILE)
+	$(MAKE) $(MAKEARGS) $(DEFCONFIG) defconfig savedefconfig
+endef
+
 
