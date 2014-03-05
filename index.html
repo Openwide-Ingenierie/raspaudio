@@ -110,13 +110,34 @@ to have a clean buildroot project. This section will provide more details on thi
 <li>added a raspaudio specific configuration option in Config.mk</li>
 <li>The makefile will backup any change to the .config file to raspaudio_defconfig immediately</li>
 </ul><h2>
-<a name="todo-list" class="anchor" href="#todo-list"><span class="octicon octicon-link"></span></a>TODO List</h2>
+<a name="reusing-the-raspaudio-infrastructure-in-your-own-project" class="anchor" href="#reusing-the-raspaudio-infrastructure-in-your-own-project"><span class="octicon octicon-link"></span></a>Reusing the Raspaudio infrastructure in your own project</h2>
 
-<ul>
-<li>Since the whole image is readonly, use a single partition and an initrd</li>
-<li>Alternatively use buildroot's genimage infrastructure if/when it's integrated</li>
-<li>Proper handling of linux-menuconfig and the other kconfig based tools</li>
-</ul>
+<p>Raspaudio properly integrates buildroot as a git submodule. To create a project working in a similar way, you just have to do the following steps</p>
+
+<pre lang="shell"><code>$ mkdir new_project
+$ cd new_project
+$ git init
+$ git submodule add git://git.buildroot.net/buildroot buildroot
+$ wget https://raw.github.com/Openwide-Ingenierie/raspaudio/master/Makefile
+$ touch Config.in
+$ touch external.mk
+$ echo "output/" &gt; .gitignore
+$ echo "dl/" &gt;&gt; .gitignore
+</code></pre>
+
+<p>Change the field PROJECT_NAME in the Makefile to the name of your project</p>
+
+<pre lang="shell"><code>$ git add Makefile external.mk Config.in .gitignore
+$ git commit -m"Project infrastructure"
+</code></pre>
+
+<p>You can now configure your project in the usual buildroot way. For example :</p>
+
+<pre><code>$ make raspberrypi_defconfig
+$ make menuconfig
+</code></pre>
+
+<p>Don't forget to save in git the configuration file $(PROJECT_NAME)_defconfig</p>
       </section>
     </div>
 
