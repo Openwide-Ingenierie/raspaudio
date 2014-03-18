@@ -8,7 +8,7 @@
 # So, we have to scan that file instead. Sigh... :-(
 BR2_RASPAUDIO_PAACCESS="$( sed -r -e '/^BR2_RASPAUDIO_PAACCESS="(.*)"$/!d;'    \
                          -e 's//\1/;'                                           \
-                         "${BUILDROOT_CONFIG}"                                  \
+                         "${BR2_CONFIG}"                                  \
                 )"
 #remove previously added section
 sed -i '/^\#\#\# Added/,$d' $TARGET_DIR/etc/pulse/system.pa
