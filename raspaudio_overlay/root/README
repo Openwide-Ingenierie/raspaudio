@@ -1,0 +1,6 @@
+to be able to check/control pulseaudio you need to add root to the pulse-access group
+(this is not done by default)
+
+usefull debug commands
+* aplay <sound file> : to test if the sound driver
+* paplay <sound file> : same thing, but through pulseaudio
